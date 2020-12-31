@@ -1,0 +1,27 @@
+image: node:14-alpine
+
+stages:
+  - build
+
+# Seems to be useless cause slowing everything by saving instead of reinstalling
+# this will apply to build stage too
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+app-build:
+  stage: build
+  before_script:
+    - npm install
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - dist/
+    expire_in: 1 day
+    when: on_success
+  script:
+    - npm run build:prod
+  only:
+    - master
+    - 29-add-ci-cd
